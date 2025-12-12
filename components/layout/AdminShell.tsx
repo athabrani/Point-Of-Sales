@@ -24,7 +24,6 @@ export function AdminShell({ user, children }: Props) {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar mirip App.tsx di ZIP */}
       <aside className="w-16 bg-white border-r border-gray-200 flex flex-col items-center py-6 gap-8">
         <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center text-white font-bold">
           POS
@@ -53,7 +52,6 @@ export function AdminShell({ user, children }: Props) {
 
       {/* Main content */}
       <main className="flex-1 overflow-auto">
-        {/* Top bar seperti gaya UI di ZIP */}
         <header className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-white">
           <div className="flex flex-col">
             <span className="text-xs text-gray-500">Admin Panel</span>
@@ -69,7 +67,7 @@ export function AdminShell({ user, children }: Props) {
               <div className="text-gray-500">{user?.email}</div>
             </div>
             <form action="/api/auth/logout" method="POST">
-              <button className="px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50">
+              <button className="px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-red-500 hover:text-gray-100 transition-colors">
                 Logout
               </button>
             </form>

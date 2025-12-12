@@ -1,4 +1,3 @@
-// app/api/iot-events/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { PaymentMethod } from '@/lib/types';

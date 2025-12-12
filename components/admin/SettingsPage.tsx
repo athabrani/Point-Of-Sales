@@ -16,14 +16,12 @@ export function SettingsPage() {
 
   return (
     <div className="p-6">
-      {/* Header */}
       <div className="mb-6">
         <h1 className="text-gray-900 mb-1">Settings</h1>
         <p className="text-gray-500">Manage your cashier system preferences</p>
       </div>
 
       <div className="flex gap-6">
-        {/* Settings Navigation */}
         <aside className="w-64 bg-white rounded-xl border border-gray-200 p-4 h-fit">
           <nav className="space-y-1">
             <button

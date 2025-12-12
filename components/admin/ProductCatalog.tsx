@@ -219,7 +219,6 @@ export function ProductCatalog() {
               )}
             </div>
 
-            {/* Product Info */}
             <div className="p-4">
               <h3 className="text-gray-900 mb-1">{product.name}</h3>
               <p className="text-sm text-gray-500 mb-3">{product.description}</p>

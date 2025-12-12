@@ -1,4 +1,3 @@
-// app/admin/layout.tsx
 import { ReactNode } from 'react';
 import { getCurrentUser } from '@/lib/get-current-user';
 import { AdminShell } from '@/components/layout/AdminShell';

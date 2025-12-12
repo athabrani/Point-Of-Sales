@@ -1,4 +1,3 @@
-// lib/auth.ts
 import { AppUser, UserRole } from './types';
 
 const mockUsers: { email: string; password: string; user: AppUser }[] = [

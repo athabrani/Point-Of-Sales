@@ -38,13 +38,12 @@ export function Reports() {
 
   return (
     <div className="p-8">
-      {/* Header */}
+
       <div className="mb-8">
         <h1 className="text-gray-900 mb-1">Sales Reports & Analytics</h1>
         <p className="text-gray-500">Track your business performance and insights</p>
       </div>
 
-      {/* Time Range Selector */}
       <div className="flex items-center gap-3 mb-8">
         <button
           onClick={() => setTimeRange('today')}

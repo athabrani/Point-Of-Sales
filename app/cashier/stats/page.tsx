@@ -1,4 +1,3 @@
-// app/cashier/stats/page.tsx
 import { db } from '@/lib/db';
 
 export default function CashierStatsPage() {

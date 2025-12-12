@@ -1,4 +1,3 @@
-// app/acc/cashier/layout.tsx
 import { ReactNode } from 'react';
 import { getCurrentUser } from '@/lib/get-current-user';
 import { CashierShell } from '@/components/layout/CashierShell';

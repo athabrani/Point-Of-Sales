@@ -50,7 +50,6 @@ export function AdminShell({ user, children }: Props) {
         </nav>
       </aside>
 
-      {/* Main content */}
       <main className="flex-1 overflow-auto">
         <header className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-white">
           <div className="flex flex-col">

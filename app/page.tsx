@@ -1,9 +1,20 @@
-import Image from "next/image";
+// app/page.tsx
+import { redirect } from 'next/navigation';
+import { getCurrentUser } from '@/lib/get-current-user';
 
-export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      Helo World
-    </div>
-  );
+export default async function HomePage() {
+  const user = await getCurrentUser();
+
+  // Belum login → ke halaman login
+  if (!user) {
+    redirect('/login');
+  }
+
+  // Sudah login → arahkan sesuai role
+  if (user.role === 'ADMIN') {
+    redirect('/admin');
+  }
+
+  // Default: kasir
+  redirect('/cashier');
 }

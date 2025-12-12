@@ -1,4 +1,3 @@
-// lib/db.ts
 import { Product, Transaction } from './types';
 
 export const db = {

@@ -132,13 +132,11 @@ export function Orders() {
 
   return (
     <div className="p-8">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-gray-900 mb-1">Orders</h1>
         <p className="text-gray-500">Manage and track all customer orders</p>
       </div>
 
-      {/* Filters */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4 flex-1 max-w-md">
           <div className="relative flex-1">
@@ -157,7 +155,6 @@ export function Orders() {
         </div>
       </div>
 
-      {/* Status Tabs */}
       <div className="flex items-center gap-3 mb-6 overflow-x-auto pb-2">
         <button
           onClick={() => setSelectedStatus('all')}
@@ -201,7 +198,7 @@ export function Orders() {
         </button>
       </div>
 
-      {/* Orders Table */}
+
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">

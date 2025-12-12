@@ -1,4 +1,3 @@
-// components/layout/CashierShell.tsx
 'use client';
 
 import { ReactNode } from 'react';

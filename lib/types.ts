@@ -1,4 +1,3 @@
-// lib/types.ts
 export type UserRole = 'ADMIN' | 'CASHIER';
 
 export interface AppUser {

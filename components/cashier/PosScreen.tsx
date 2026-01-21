@@ -4,6 +4,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Search, Plus, Minus, Trash2, ShoppingCart } from 'lucide-react';
 import type { Product } from '@/lib/types';
+import { useRouter } from 'next/navigation';
+
 
 type CartItem = {
   product: Product;
@@ -16,6 +18,8 @@ export function PosScreen() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const formatCurrency = (value: number) => value.toLocaleString('id-ID');
 
@@ -143,7 +147,7 @@ export function PosScreen() {
                   <p className="text-gray-900 font-medium">{item.product.name}</p>
                   <p className="text-sm text-gray-500">Rp. {formatCurrency(item.product.price)}</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-gray-600">
                   <button
                     onClick={() => handleDecrease(item.product.id)}
                     className="p-2 rounded-md border border-gray-200 hover:bg-gray-50"
@@ -186,6 +190,7 @@ export function PosScreen() {
             <span>Rp. {formatCurrency(subtotal * 1.1)}</span>
           </div>
           <button
+            onClick={() => router.push('cashier/payment')}
             className="w-full py-3 rounded-lg bg-orange-500 text-white font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50"
             disabled={cart.length === 0}
           >

@@ -84,7 +84,7 @@ const products: Product[] = [
   },
 ];
 
-export function ProductCatalog() {
+export default function ProductCatalog() {
   const [selectedCategory, setSelectedCategory] = useState<Category>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [quantities, setQuantities] = useState<Record<number, number>>({});
@@ -118,10 +118,9 @@ export function ProductCatalog() {
   const totalProducts = products.length;
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-gray-900 mb-1">Welcome, Gerv</h1>
+    <div className="p-6">
+      <div className="mb-6">
+        <h1 className="text-gray-900 mb-1">Welcome, Admin</h1>
         <p className="text-gray-500">You have {totalProducts} product in inventory</p>
       </div>
 
@@ -132,10 +131,10 @@ export function ProductCatalog() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search product..."
+              placeholder="Search product"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2.5 text-gray-500 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             />
           </div>
           <button className="p-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">

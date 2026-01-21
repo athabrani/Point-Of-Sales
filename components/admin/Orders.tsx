@@ -131,8 +131,8 @@ export function Orders() {
   };
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
+    <div className="p-6">
+      <div className="mb-6">
         <h1 className="text-gray-900 mb-1">Orders</h1>
         <p className="text-gray-500">Manage and track all customer orders</p>
       </div>

@@ -6,6 +6,7 @@ import { Search, Plus, Minus, Trash2, ShoppingCart } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 
+const CURRENT_ORDER_KEY = 'pos.currentOrder';
 
 type CartItem = {
   product: Product;
@@ -73,6 +74,32 @@ export function PosScreen() {
   };
 
   const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const tax = subtotal * 0.1;
+  const total = subtotal + tax;
+
+  const handleProcessPayment = () => {
+    const orderItems = cart.map((item) => ({
+      id: item.product.id,
+      name: item.product.name,
+      price: item.product.price,
+      quantity: item.quantity,
+    }));
+
+    const payload = {
+      items: orderItems,
+      subtotal,
+      tax,
+      total,
+    };
+
+    try {
+      sessionStorage.setItem(CURRENT_ORDER_KEY, JSON.stringify(payload));
+    } catch (err) {
+      console.error('Failed to store order in session storage', err);
+    }
+
+    router.push('/cashier/payment');
+  };
 
   return (
     <div className="p-6 grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -87,7 +114,6 @@ export function PosScreen() {
               className="w-full pl-10 pr-4 py-3 text-gray-900 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </div>
-          <button className="px-4 py-3 rounded-lg bg-gray-100 text-gray-700 border border-gray-200">New Order</button>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -183,14 +209,14 @@ export function PosScreen() {
           </div>
           <div className="flex items-center justify-between text-gray-600">
             <span>Tax (10%)</span>
-            <span>Rp. {formatCurrency(subtotal * 0.1)}</span>
+            <span>Rp. {formatCurrency(tax)}</span>
           </div>
           <div className="flex items-center justify-between text-gray-900 font-semibold text-lg">
             <span>Total</span>
-            <span>Rp. {formatCurrency(subtotal * 1.1)}</span>
+            <span>Rp. {formatCurrency(total)}</span>
           </div>
           <button
-            onClick={() => router.push('cashier/payment')}
+            onClick={handleProcessPayment}
             className="w-full py-3 rounded-lg bg-orange-500 text-white font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50"
             disabled={cart.length === 0}
           >

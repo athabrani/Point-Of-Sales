@@ -50,13 +50,12 @@ export function AdminShell({ user, children }: Props) {
         </nav>
       </aside>
 
-      {/* Main content */}
       <main className="flex-1 overflow-auto">
         <header className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-white">
           <div className="flex flex-col">
             <span className="text-xs text-gray-500">Admin Panel</span>
             <span className="text-sm font-semibold text-gray-900">
-              Multimodal POS
+              Integrated Point of Sale System
             </span>
           </div>
           <div className="flex items-center gap-3 text-xs">

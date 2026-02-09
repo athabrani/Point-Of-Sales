@@ -128,9 +128,7 @@ export function ProcessPayment({
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Left Side - Payment Methods */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Payment Method Selection */}
             <div className="bg-white rounded-xl p-6 border border-gray-200">
               <h3 className="text-gray-900 mb-4">Select Payment Method</h3>
 

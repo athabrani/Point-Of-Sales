@@ -55,7 +55,7 @@ export function AdminShell({ user, children }: Props) {
           <div className="flex flex-col">
             <span className="text-xs text-gray-500">Admin Panel</span>
             <span className="text-sm font-semibold text-gray-900">
-              Multimodal POS
+              Integrated Point of Sale System
             </span>
           </div>
           <div className="flex items-center gap-3 text-xs">

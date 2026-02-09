@@ -37,9 +37,8 @@ export function Reports() {
   const formatCurrency = (value: number) => value.toLocaleString('id-ID');
 
   return (
-    <div className="p-8">
-
-      <div className="mb-8">
+    <div className="p-6">
+      <div className="mb-6">
         <h1 className="text-gray-900 mb-1">Sales Reports & Analytics</h1>
         <p className="text-gray-500">Track your business performance and insights</p>
       </div>

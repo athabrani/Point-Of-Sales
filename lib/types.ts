@@ -15,6 +15,7 @@ export interface Product {
   price: number;
   imageUrl?: string;
   isActive: boolean;
+  
 }
 
 export interface TransactionItem {

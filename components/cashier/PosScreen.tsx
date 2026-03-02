@@ -15,6 +15,7 @@ type CartItem = {
 
 export function PosScreen() {
   const [query, setQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -42,11 +43,35 @@ export function PosScreen() {
     fetchProducts();
   }, []);
 
+  const categoryOptions = useMemo(() => {
+    const categories = Array.from(
+      new Set(
+        products
+          .map((product) => product.category?.trim().toLowerCase())
+          .filter((category): category is string => Boolean(category))
+      )
+    );
+
+    return ['all', ...categories];
+  }, [products]);
+
+  const formatCategoryLabel = (category: string) => {
+    if (category === 'all') return 'All';
+    return category
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   const filteredProducts = useMemo(() => {
     const term = query.trim().toLowerCase();
-    if (!term) return products;
-    return products.filter((product) => product.name.toLowerCase().includes(term));
-  }, [query, products]);
+    return products.filter((product) => {
+      const matchesSearch = !term || product.name.toLowerCase().includes(term);
+      const productCategory = product.category?.trim().toLowerCase();
+      const matchesCategory = selectedCategory === 'all' || productCategory === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [query, products, selectedCategory]);
 
   const handleAdd = (product: Product) => {
     setCart((prev) => {
@@ -98,7 +123,7 @@ export function PosScreen() {
       console.error('Failed to store order in session storage', err);
     }
 
-    router.push('/cashier/payment');
+    router.push('/payment');
   };
 
   return (
@@ -111,9 +136,25 @@ export function PosScreen() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search menu"
-              className="w-full pl-10 pr-4 py-3 text-gray-900 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full pl-10 pr-4 py-3 text-gray-900 bg-white rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </div>
+        </div>
+
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          {categoryOptions.map((category) => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-4 py-2 rounded-lg whitespace-nowrap border transition-colors ${
+                selectedCategory === category
+                  ? 'bg-orange-500 text-white border-orange-500'
+                  : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+              }`}
+            >
+              {formatCategoryLabel(category)}
+            </button>
+          ))}
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">

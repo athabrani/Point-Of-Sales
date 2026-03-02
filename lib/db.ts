@@ -26,7 +26,7 @@ db.products.push(
     category: 'Croissant',
   },
   {
-    id: 3,
+    id: '3',
     name: 'Sweet Granulated Sugar Croissant',
     description: 'Croissant',
     price: 38000,
@@ -35,7 +35,7 @@ db.products.push(
     category: 'signature',
   },
   {
-    id: 4,
+    id: '4',
     name: 'Smoky Tenderloin Stick Croissant',
     description: 'Croissant',
     price: 45000,
@@ -44,7 +44,7 @@ db.products.push(
     category: 'signature',
   },
   {
-    id: 5,
+    id: '5',
     name: 'Sweet Chocolate Croissant',
     description: 'Croissant',
     price: 34000,
@@ -53,7 +53,7 @@ db.products.push(
     category: 'croissant',
   },
   {
-    id: 6,
+    id: '6',
     name: 'Basic Croissant & Strawberry Jam',
     description: 'Croissant',
     price: 43000,
@@ -62,7 +62,7 @@ db.products.push(
     category: 'croissant',
   },
   {
-    id: 7,
+    id: '7',
     name: 'Blueberry Jam Croissant',
     description: 'Croissant',
     price: 32000,
@@ -71,7 +71,7 @@ db.products.push(
     category: 'croissant',
   },
   {
-    id: 8,
+    id: '8',
     name: 'Strawberry Jam Croissant',
     description: 'Croissant',
     price: 32000,

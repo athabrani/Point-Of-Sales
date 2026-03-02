@@ -24,3 +24,21 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.shell-waves-bg {
+  background-color: #f8fafc;
+  background-image: 
+    url('/flower.svg'),
+    url('/daisy.svg');
+  background-repeat:
+    no-repeat,
+    no-repeat;
+  background-position: 
+    right 100px bottom 20px,
+    left 100px top 70px;
+  background-size: 
+    auto 180px,
+    180px 280px;
+}
+
+

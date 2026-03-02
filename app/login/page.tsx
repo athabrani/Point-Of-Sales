@@ -99,8 +99,8 @@ export default function LoginPage() {
           <div className="mt-4 text-[11px] text-gray-500 border-t pt-3">
             Demo accounts:
             <ul className="mt-1 space-y-1">
-              <li>Admin: admin@example.com / admin123</li>
-              <li>Kasir: cashier@example.com / cashier123</li>
+              <li>Admin: admin@example.com / 123</li>
+              <li>Kasir: kasir@example.com / 123</li>
             </ul>
           </div>
         </form>

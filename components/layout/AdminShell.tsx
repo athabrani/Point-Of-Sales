@@ -23,7 +23,7 @@ export function AdminShell({ user, children }: Props) {
   ];
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen shell-waves-bg">
       <aside className="w-16 bg-white border-r border-gray-200 flex flex-col items-center py-6 gap-8">
         <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center text-white font-bold">
           POS

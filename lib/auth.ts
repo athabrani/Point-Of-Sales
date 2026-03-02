@@ -3,7 +3,7 @@ import { AppUser, UserRole } from './types';
 const mockUsers: { email: string; password: string; user: AppUser }[] = [
   {
     email: 'admin@example.com',
-    password: 'admin123',
+    password: '123',
     user: {
       id: 'u-1',
       name: 'Admin POS',
@@ -12,8 +12,8 @@ const mockUsers: { email: string; password: string; user: AppUser }[] = [
     },
   },
   {
-    email: 'cashier@example.com',
-    password: 'cashier123',
+    email: 'kasir@example.com',
+    password: '123',
     user: {
       id: 'u-2',
       name: 'Kasir 1',

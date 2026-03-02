@@ -45,7 +45,7 @@ export function ProcessPayment({
   const [walletPhone, setWalletPhone] = useState("");
   const [showBackConfirm, setShowBackConfirm] = useState(false);
 
-  const cashAmount = parseFloat(cashReceived) || 0;
+  const cashAmount = Number(cashReceived) || 0;
   const change = cashAmount - total;
 
   const quickCashAmounts = [50000, 100000, 150000, 200000, 500000];
@@ -66,6 +66,17 @@ export function ProcessPayment({
 
   const handleQuickCash = (amount: number) => {
     setCashReceived(amount.toString());
+  };
+
+  const formatRupiahInput = (value: string) => {
+    const numericValue = Number(value);
+    if (!value || Number.isNaN(numericValue)) return "";
+    return `Rp. ${numericValue.toLocaleString("id-ID")}`;
+  };
+
+  const handleCashReceivedChange = (value: string) => {
+    const numericOnly = value.replace(/\D/g, "");
+    setCashReceived(numericOnly);
   };
 
   if (showSuccess) {
@@ -220,11 +231,12 @@ export function ProcessPayment({
                     Cash Received
                   </label>
                   <input
-                    type="number"
-                    value={cashReceived}
-                    onChange={(e) => setCashReceived(e.target.value)}
-                    placeholder="Enter amount"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    type="text"
+                    inputMode="numeric"
+                    value={formatRupiahInput(cashReceived)}
+                    onChange={(e) => handleCashReceivedChange(e.target.value)}
+                    placeholder="Rp. 0"
+                    className="w-full text-gray-500 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
                 </div>
 
@@ -237,7 +249,7 @@ export function ProcessPayment({
                       <button
                         key={amount}
                         onClick={() => handleQuickCash(amount)}
-                        className="py-2 px-3 border border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors text-sm"
+                        className="py-2 px-3 text-gray-500 border border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors text-sm"
                       >
                         {(amount / 1000).toFixed(0)}k
                       </button>

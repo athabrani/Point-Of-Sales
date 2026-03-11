@@ -7,6 +7,7 @@ import type { Product } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 
 const CURRENT_ORDER_KEY = 'pos.currentOrder';
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? '').replace(/\/$/, '');
 
 type CartItem = {
   product: Product;
@@ -29,7 +30,8 @@ export function PosScreen() {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const res = await fetch('/api/products');
+        const productsUrl = API_BASE_URL ? `${API_BASE_URL}/api/products` : '/api/products';
+        const res = await fetch(productsUrl);
         const data = (await res.json()) as Product[];
         setProducts(data.filter((p) => p.isActive));
       } catch (err) {

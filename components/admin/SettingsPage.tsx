@@ -72,7 +72,7 @@ export function SettingsPage() {
               <span>Payment</span>
             </button>
             
-            <button
+            {/* <button
               onClick={() => setActiveTab('printer')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                 activeTab === 'printer'
@@ -82,7 +82,7 @@ export function SettingsPage() {
             >
               <Printer className="w-5 h-5" />
               <span>Printer</span>
-            </button>
+            </button> */}
             
             <button
               onClick={() => setActiveTab('security')}
@@ -104,7 +104,7 @@ export function SettingsPage() {
           {activeTab === 'store' && (<StoreSettings />)}
           {activeTab === 'notifications' && (<NotificationSettings />)}
           {activeTab === 'payment' && (<PaymentSettings/>)}
-          {activeTab === 'printer' && (<PrinterSettings/>)}
+          {/* {activeTab === 'printer' && (<PrinterSettings/>)} */}
           {activeTab === 'security' && (<SecuritySettings />)}
         </div>
       </div>

@@ -1,8 +1,10 @@
 export type UserRole = 'ADMIN' | 'CASHIER';
 
 export interface AppUser {
+  [x: string]: string;
   id: string;
   name: string;
+  username: string;
   email: string;
   role: UserRole;
 }

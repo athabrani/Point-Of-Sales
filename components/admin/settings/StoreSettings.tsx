@@ -10,8 +10,8 @@ export default function StoreSettings() {
                   <label className="block text-gray-700 mb-2">Store Name</label>
                   <input
                     type="text"
-                    defaultValue="Croissant & Coffee Shop"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    defaultValue="Warung madura jaya"
+                    className="w-full text-gray-500/30 px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
                 </div>
 
@@ -20,7 +20,7 @@ export default function StoreSettings() {
                   <textarea
                     rows={3}
                     defaultValue="123 Main Street, Jakarta"
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+                    className="w-full px-4 py-2.5 text-gray-500/30 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
                   />
                 </div>
 
@@ -30,17 +30,17 @@ export default function StoreSettings() {
                     <input
                       type="tel"
                       defaultValue="+62 21 1234 5678"
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      className="w-full px-4 py-2.5 text-gray-500/30 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     />
                   </div>
-                  <div>
+                  {/* <div>
                     <label className="block text-gray-700 mb-2">Tax ID</label>
                     <input
                       type="text"
                       defaultValue="12.345.678.9-012.000"
                       className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     />
-                  </div>
+                  </div> */}
                 </div>
 
                 <button type="submit" className="px-6 py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center gap-2">

@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server';
 import { authenticate, createSessionValue } from '@/lib/auth';
 
 export async function POST(req: Request) {
-  const { email, password } = await req.json();
+  const { username, password } = await req.json();
 
-  const user = await authenticate(email, password);
+  const user = await authenticate(username, password);
   if (!user) {
     return NextResponse.json(
       { error: 'Invalid email or password' },

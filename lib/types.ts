@@ -1,8 +1,10 @@
 export type UserRole = 'ADMIN' | 'CASHIER';
 
 export interface AppUser {
+  [x: string]: string;
   id: string;
   name: string;
+  username: string;
   email: string;
   role: UserRole;
 }
@@ -12,8 +14,10 @@ export type PaymentMethod = 'CASH' | 'EWALLET' | 'QRIS';
 export interface Product {
   id: string;
   name: string;
+  description?: string;
   price: number;
   imageUrl?: string;
+  category?: string;
   isActive: boolean;
   
 }

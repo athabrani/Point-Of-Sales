@@ -66,7 +66,7 @@ export default function FullScreenSignup () {
         return;
       }
 
-      const role = data.user.role as "ADMIN" | "CASHIER";
+      const role = data.role?.toUpperCase();
 
       if (role === "ADMIN") {
         router.push("/admin");

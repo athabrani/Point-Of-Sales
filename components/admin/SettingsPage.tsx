@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Save, User, Store, Bell, CreditCard, Printer, Shield } from 'lucide-react';
+import { Save, User, Store, Bell, CreditCard, Printer, Shield, Users } from 'lucide-react';
+import CashierSettings from './settings/CashierSettings';
 import ProfileSettings from './settings/ProfileSettings';
 import StoreSettings from './settings/StoreSettings';
 import NotificationSettings from './settings/NotificationSettings';
@@ -9,7 +10,7 @@ import PaymentSettings from './settings/PaymentSettings';
 import PrinterSettings from './settings/PrinterSettings';
 import SecuritySettings from './settings/SecuritySettings';
 
-type SettingsTab = 'profile' | 'store' | 'notifications' | 'payment' | 'printer' | 'security';
+type SettingsTab = 'profile' | 'store' | 'cashier' | 'notifications' | 'payment' | 'printer' | 'security';
 
 export function SettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
@@ -46,6 +47,18 @@ export function SettingsPage() {
             >
               <Store className="w-5 h-5" />
               <span>Store Info</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('cashier')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                activeTab === 'cashier'
+                  ? 'bg-orange-100 text-orange-600'
+                  : 'text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              <Users className="w-5 h-5" />
+              <span>Cashiers Info</span>
             </button>
             
             <button
@@ -102,6 +115,7 @@ export function SettingsPage() {
         <div className="flex-1">
           {activeTab === 'profile' && (<ProfileSettings/>)}
           {activeTab === 'store' && (<StoreSettings />)}
+          {activeTab === 'cashier' && (<CashierSettings />)}
           {activeTab === 'notifications' && (<NotificationSettings />)}
           {activeTab === 'payment' && (<PaymentSettings/>)}
           {/* {activeTab === 'printer' && (<PrinterSettings/>)} */}

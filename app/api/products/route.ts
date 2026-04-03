@@ -1,21 +1,46 @@
-import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { Product } from '@/lib/types';
-import { randomUUID } from 'crypto';
+import { NextResponse } from "next/server";
 
-export async function GET() {
-  return NextResponse.json(db.products);
+const BASE_URL = "https://pos-system-be-pi.vercel.app";
+
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+
+    const category = searchParams.get("category");
+    const search = searchParams.get("search");
+
+    let url = `${BASE_URL}/products/`;
+
+    const query = new URLSearchParams();
+    if (category) query.append("category", category);
+    if (search) query.append("search", search);
+
+    if (query.toString()) {
+      url += `?${query.toString()}`;
+    }
+
+    const res = await fetch(url, { cache: "no-store" });
+    const data = await res.json();
+
+    return NextResponse.json(data);
+  } catch (err) {
+    return NextResponse.json({ error: "Failed GET products" }, { status: 500 });
+  }
 }
 
 export async function POST(req: Request) {
-  const body = (await req.json()) as Partial<Product>;
-  const newProduct: Product = {
-    id: randomUUID(),
-    name: body.name ?? 'New Product',
-    price: body.price ?? 0,
-    imageUrl: body.imageUrl,
-    isActive: body.isActive ?? true,
-  };
-  db.products.push(newProduct);
-  return NextResponse.json(newProduct, { status: 201 });
+  try {
+    const formData = await req.formData();
+
+    const res = await fetch(`${BASE_URL}/products/`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    return NextResponse.json(data);
+  } catch (err) {
+    return NextResponse.json({ error: "Failed POST product" }, { status: 500 });
+  }
 }

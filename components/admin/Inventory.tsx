@@ -1,8 +1,16 @@
-'use client';
+"use client";
 
-import { useState, useMemo, useEffect } from 'react';
-import type { FormEvent } from 'react';
-import { Search, Plus, Pencil, Trash2, AlertCircle, CheckCircle2, X } from 'lucide-react';
+import { useState, useMemo, useEffect } from "react";
+import type { FormEvent } from "react";
+import {
+  Search,
+  Plus,
+  Pencil,
+  Trash2,
+  AlertCircle,
+  CheckCircle2,
+  X,
+} from "lucide-react";
 
 interface InventoryItem {
   id: number;
@@ -15,67 +23,143 @@ interface InventoryItem {
   lastUpdated: string;
 }
 
-const mockInventory: InventoryItem[] = [
-  { id: 1, name: 'Almond Brown Croissant', category: 'Croissant', stock: 45, unit: 'pcs', reorderLevel: 20, price: 34000, lastUpdated: 'Dec 8, 2024' },
-  { id: 2, name: 'Basic Croissant A La Pierre', category: 'Croissant', stock: 0, unit: 'pcs', reorderLevel: 20, price: 32000, lastUpdated: 'Dec 8, 2024' },
-  { id: 3, name: 'Sweet Granulated Sugar Croissant', category: 'Croissant', stock: 38, unit: 'pcs', reorderLevel: 15, price: 38000, lastUpdated: 'Dec 8, 2024' },
-  { id: 4, name: 'Smoky Tenderloin Stick Croissant', category: 'Signature', stock: 0, unit: 'pcs', reorderLevel: 10, price: 45000, lastUpdated: 'Dec 8, 2024' },
-  { id: 5, name: 'Sweet Chocolate Croissant', category: 'Croissant', stock: 52, unit: 'pcs', reorderLevel: 20, price: 34000, lastUpdated: 'Dec 8, 2024' },
-  { id: 6, name: 'Blueberry Jam Croissant', category: 'Croissant', stock: 15, unit: 'pcs', reorderLevel: 20, price: 32000, lastUpdated: 'Dec 8, 2024' },
-  { id: 7, name: 'Strawberry Jam Croissant', category: 'Croissant', stock: 28, unit: 'pcs', reorderLevel: 20, price: 32000, lastUpdated: 'Dec 8, 2024' },
-  { id: 8, name: 'Belgian Waffle', category: 'Waffle', stock: 34, unit: 'pcs', reorderLevel: 15, price: 28000, lastUpdated: 'Dec 8, 2024' },
-  { id: 9, name: 'Coffee Latte', category: 'Coffee', stock: 120, unit: 'cups', reorderLevel: 50, price: 25000, lastUpdated: 'Dec 8, 2024' },
-];
+type ProductAPI = {
+  id: number;
+  name: string;
+  category: string;
+  stock: number;
+  price: number;
+  reorder_level: number;
+  updated_at: string;
+};
 
-type ModalMode = 'add' | 'edit';
-
+type ModalMode = "add" | "edit";
 function useAnimatedMount(isOpen: boolean, duration = 200) {
   const [mounted, setMounted] = useState(isOpen);
   const [active, setActive] = useState(false);
 
   useEffect(() => {
+    let frame: number;
+    let timeout: ReturnType<typeof setTimeout>;
+
     if (isOpen) {
-      setMounted(true);
-      const id = requestAnimationFrame(() => setActive(true));
-      return () => cancelAnimationFrame(id);
+      frame = requestAnimationFrame(() => {
+        setMounted(true);
+        setActive(true);
+      });
     } else {
-      setActive(false);
-      const t = window.setTimeout(() => setMounted(false), duration);
-      return () => window.clearTimeout(t);
+      frame = requestAnimationFrame(() => {
+        setActive(false);
+      });
+
+      timeout = setTimeout(() => {
+        setMounted(false);
+      }, duration);
     }
+
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(timeout);
+    };
   }, [isOpen, duration]);
 
   return { mounted, active };
 }
-
 export function Inventory() {
-  const [inventory, setInventory] = useState<InventoryItem[]>(mockInventory);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [summary, setSummary] = useState({
+    total: 0,
+    lowStock: 0,
+    outOfStock: 0,
+  });
 
+  // 🔥 TAMBAHKAN DI SINI
+
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch("/api/products", { cache: "no-store" });
+      const result = await res.json();
+
+      const mapped = result.data.map(
+        (
+          item: ProductAPI & {
+            ID: number;
+            UpdatedAt: string;
+          },
+        ) => ({
+          id: item.ID, // 🔥 FIX DI SINI
+          name: item.name,
+          category: item.category,
+          stock: item.stock,
+          unit: "pcs",
+          reorderLevel: item.reorder_level,
+          price: item.price,
+          lastUpdated: new Date(item.UpdatedAt).toLocaleDateString("en-US"), // 🔥 FIX
+        }),
+      );
+
+      setInventory(mapped);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const fetchSummary = async () => {
+    try {
+      const res = await fetch("/api/products/summary", {
+        cache: "no-store",
+      });
+
+      const result = await res.json();
+
+      console.log("SUMMARY:", result); // 🔥 debug
+
+      setSummary({
+        total: result.data.total_items,
+        lowStock: result.data.low_stock_alerts,
+        outOfStock: result.data.out_of_stock,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  useEffect(() => {
+    const loadData = async () => {
+      await fetchProducts();
+      await fetchSummary();
+    };
+
+    loadData();
+  }, []);
   // modal add/edit (tetap pakai showAddModal supaya layout sama)
   const [showAddModal, setShowAddModal] = useState(false);
-  const [modalMode, setModalMode] = useState<ModalMode>('add');
+  const [modalMode, setModalMode] = useState<ModalMode>("add");
   const [editingId, setEditingId] = useState<number | null>(null);
 
   // form state (layout sama, tapi jadi controlled)
   const [form, setForm] = useState({
-    name: '',
-    category: 'Croissant',
-    stock: '',
-    unit: 'pcs',
-    reorderLevel: '',
+    name: "",
+    category: "Croissant",
+    stock: "",
+    unit: "pcs",
+    reorderLevel: "",
   });
 
   // price digits (untuk format Rp + ribuan)
-  const [digits, setDigits] = useState('');
+  const [digits, setDigits] = useState("");
 
   const formatted = useMemo(() => {
-    if (!digits) return '';
-    return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(Number(digits));
+    if (!digits) return "";
+    return new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(
+      Number(digits),
+    );
   }, [digits]);
 
   // toast
-  const [toast, setToast] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
+  const [toast, setToast] = useState<{ open: boolean; message: string }>({
+    open: false,
+    message: "",
+  });
   const showToast = (message: string) => {
     setToast({ open: true, message });
     window.setTimeout(() => setToast((t) => ({ ...t, open: false })), 2500);
@@ -83,7 +167,10 @@ export function Inventory() {
 
   // confirm add
   const [showConfirmAdd, setShowConfirmAdd] = useState(false);
-  const [pendingPayload, setPendingPayload] = useState<Omit<InventoryItem, 'id'> | null>(null);
+  const [pendingPayload, setPendingPayload] = useState<Omit<
+    InventoryItem,
+    "id"
+  > | null>(null);
 
   // delete confirm
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -93,32 +180,41 @@ export function Inventory() {
     return inventory.filter(
       (item) =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.category.toLowerCase().includes(searchQuery.toLowerCase())
+        item.category.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }, [inventory, searchQuery]);
 
-  const lowStockItems = filteredInventory.filter((item) => item.stock <= item.reorderLevel);
-  const outOfStockItems = filteredInventory.filter((item) => item.stock === 0);
-
   const getStockStatus = (item: InventoryItem) => {
-    if (item.stock === 0) return { label: 'Out of Stock', color: 'bg-red-100 text-red-700' };
-    if (item.stock <= item.reorderLevel) return { label: 'Low Stock', color: 'bg-yellow-100 text-yellow-700' };
-    return { label: 'In Stock', color: 'bg-green-100 text-green-700' };
+    if (item.stock === 0)
+      return { label: "Out of Stock", color: "bg-red-100 text-red-700" };
+    if (item.stock <= item.reorderLevel)
+      return { label: "Low Stock", color: "bg-yellow-100 text-yellow-700" };
+    return { label: "In Stock", color: "bg-green-100 text-green-700" };
   };
 
   const formatLastUpdated = () =>
-    new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    new Date().toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
 
   const openAddModal = () => {
-    setModalMode('add');
+    setModalMode("add");
     setEditingId(null);
-    setForm({ name: '', category: 'Croissant', stock: '', unit: 'pcs', reorderLevel: '' });
-    setDigits('');
+    setForm({
+      name: "",
+      category: "Croissant",
+      stock: "",
+      unit: "pcs",
+      reorderLevel: "",
+    });
+    setDigits("");
     setShowAddModal(true);
   };
 
   const openEditModal = (item: InventoryItem) => {
-    setModalMode('edit');
+    setModalMode("edit");
     setEditingId(item.id);
     setForm({
       name: item.name,
@@ -131,53 +227,88 @@ export function Inventory() {
     setShowAddModal(true);
   };
 
-  const buildPayload = (): Omit<InventoryItem, 'id'> => ({
+  const buildPayload = (): Omit<InventoryItem, "id"> => ({
     name: form.name.trim(),
     category: form.category,
     stock: Number(form.stock || 0),
-    unit: form.unit.trim() || 'pcs',
+    unit: form.unit.trim() || "pcs",
     reorderLevel: Number(form.reorderLevel || 0),
     price: Number(digits || 0),
     lastUpdated: formatLastUpdated(),
   });
 
   // submit form: kalau ADD -> buka confirm, kalau EDIT -> langsung save
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const payload = buildPayload();
 
     if (!payload.name) {
-      showToast('Nama produk wajib diisi');
+      showToast("Nama produk wajib diisi");
       return;
     }
 
-    if (modalMode === 'add') {
+    // ADD
+    if (modalMode === "add") {
       setPendingPayload(payload);
       setShowConfirmAdd(true);
       return;
     }
 
-    // edit
-    if (editingId == null) return;
-    setInventory((prev) => prev.map((it) => (it.id === editingId ? { ...it, ...payload } : it)));
-    setShowAddModal(false);
-    showToast('Item berhasil diperbarui');
+    // EDIT
+    if (modalMode === "edit" && editingId != null) {
+      try {
+        const formData = new FormData();
+        formData.append("name", payload.name);
+        formData.append("category", payload.category);
+        formData.append("price", String(payload.price));
+        formData.append("stock", String(payload.stock));
+        formData.append("reorder_level", String(payload.reorderLevel));
+
+        await fetch(`/api/products/${editingId}`, {
+          method: "PUT",
+          body: formData,
+        });
+
+        await fetchProducts();
+        await fetchSummary();
+
+        setShowAddModal(false);
+        showToast("Item berhasil diperbarui");
+      } catch (err) {
+        console.error(err);
+      }
+
+      return;
+    }
   };
 
-  const handleConfirmAdd = () => {
+  const handleConfirmAdd = async () => {
     if (!pendingPayload) return;
 
-    setInventory((prev) => {
-      const nextId = (prev.reduce((m, it) => Math.max(m, it.id), 0) || 0) + 1;
-      return [...prev, { id: nextId, ...pendingPayload }];
-    });
+    try {
+      const formData = new FormData();
+      formData.append("name", pendingPayload.name);
+      formData.append("category", pendingPayload.category);
+      formData.append("price", String(pendingPayload.price));
+      formData.append("stock", String(pendingPayload.stock));
+      formData.append("reorder_level", String(pendingPayload.reorderLevel));
 
-    setShowConfirmAdd(false);
-    setPendingPayload(null);
-    setShowAddModal(false);
-    setDigits('');
-    setForm({ name: '', category: 'Croissant', stock: '', unit: 'pcs', reorderLevel: '' });
-    showToast('Item berhasil ditambahkan!');
+      await fetch("/api/products", {
+        method: "POST",
+        body: formData,
+      });
+
+      await fetchProducts();
+      await fetchSummary();
+
+      setShowConfirmAdd(false);
+      setPendingPayload(null);
+      setShowAddModal(false);
+
+      showToast("Item berhasil ditambahkan!");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const askDelete = (id: number) => {
@@ -185,12 +316,24 @@ export function Inventory() {
     setShowDeleteConfirm(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deleteId == null) return;
-    setInventory((prev) => prev.filter((it) => it.id !== deleteId));
-    setShowDeleteConfirm(false);
-    setDeleteId(null);
-    showToast('Item berhasil dihapus');
+
+    try {
+      await fetch(`/api/products/${deleteId}`, {
+        method: "DELETE",
+      });
+
+      await fetchProducts();
+      await fetchSummary();
+
+      setShowDeleteConfirm(false);
+      setDeleteId(null);
+
+      showToast("Item berhasil dihapus");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   // animasi (tanpa ubah layout)
@@ -203,10 +346,11 @@ export function Inventory() {
     <div className="p-6">
       <div className="mb-6">
         <h1 className="text-gray-900 mb-1">Inventory Management</h1>
-        <p className="text-gray-500">Track and manage your product stock levels</p>
+        <p className="text-gray-500">
+          Track and manage your product stock levels
+        </p>
       </div>
 
- 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white p-6 rounded-xl border border-gray-200">
           <div className="flex items-center justify-between mb-2">
@@ -215,7 +359,7 @@ export function Inventory() {
               <Package className="w-5 h-5 text-blue-600" />
             </div>
           </div>
-          <div className="text-gray-900">{inventory.length}</div>
+          <div className="text-gray-900">{summary.total}</div>
           <p className="text-sm text-gray-500 mt-1">Product types</p>
         </div>
 
@@ -226,7 +370,7 @@ export function Inventory() {
               <AlertCircle className="w-5 h-5 text-yellow-600" />
             </div>
           </div>
-          <div className="text-gray-900">{lowStockItems.length}</div>
+          <div className="text-gray-900">{summary.lowStock}</div>
           <p className="text-sm text-gray-500 mt-1">Items need reorder</p>
         </div>
 
@@ -237,7 +381,7 @@ export function Inventory() {
               <AlertCircle className="w-5 h-5 text-red-600" />
             </div>
           </div>
-          <div className="text-gray-900">{outOfStockItems.length}</div>
+          <div className="text-gray-900">{summary.outOfStock}</div>
           <p className="text-sm text-gray-500 mt-1">Unavailable items</p>
         </div>
       </div>
@@ -269,13 +413,19 @@ export function Inventory() {
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-6 py-3 text-left text-gray-700">Product Name</th>
+                <th className="px-6 py-3 text-left text-gray-700">
+                  Product Name
+                </th>
                 <th className="px-6 py-3 text-left text-gray-700">Category</th>
                 <th className="px-6 py-3 text-left text-gray-700">Stock</th>
-                <th className="px-6 py-3 text-left text-gray-700">Reorder Level</th>
+                <th className="px-6 py-3 text-left text-gray-700">
+                  Reorder Level
+                </th>
                 <th className="px-6 py-3 text-left text-gray-700">Price</th>
                 <th className="px-6 py-3 text-left text-gray-700">Status</th>
-                <th className="px-6 py-3 text-left text-gray-700">Last Updated</th>
+                <th className="px-6 py-3 text-left text-gray-700">
+                  Last Updated
+                </th>
                 <th className="px-6 py-3 text-left text-gray-700">Actions</th>
               </tr>
             </thead>
@@ -283,7 +433,10 @@ export function Inventory() {
               {filteredInventory.map((item) => {
                 const status = getStockStatus(item);
                 return (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={item.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
                     <td className="px-6 py-4 text-gray-900">{item.name}</td>
                     <td className="px-6 py-4 text-gray-600">{item.category}</td>
                     <td className="px-6 py-4">
@@ -294,7 +447,9 @@ export function Inventory() {
                     <td className="px-6 py-4 text-gray-600">
                       {item.reorderLevel} {item.unit}
                     </td>
-                    <td className="px-6 py-4 text-gray-900">Rp. {item.price.toLocaleString('id-ID')}</td>
+                    <td className="px-6 py-4 text-gray-900">
+                      Rp. {item.price.toLocaleString("id-ID")}
+                    </td>
                     <td className="px-6 py-4">
                       <span
                         className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm ${status.color}`}
@@ -302,7 +457,9 @@ export function Inventory() {
                         {status.label}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-gray-600">{item.lastUpdated}</td>
+                    <td className="px-6 py-4 text-gray-600">
+                      {item.lastUpdated}
+                    </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <button
@@ -339,17 +496,17 @@ export function Inventory() {
       {addAnim.mounted && (
         <div
           className={`fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50
-          transition-opacity duration-200 ease-out ${addAnim.active ? 'opacity-100' : 'opacity-0'}`}
+          transition-opacity duration-200 ease-out ${addAnim.active ? "opacity-100" : "opacity-0"}`}
           onClick={() => setShowAddModal(false)}
         >
           <div
             className={`bg-white rounded-xl max-w-md w-full p-6
             transition-all duration-200 ease-out
-            ${addAnim.active ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2'}`}
+            ${addAnim.active ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-2"}`}
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-gray-900 mb-6">
-              {modalMode === 'add' ? 'Add New Item' : 'Edit Item'}
+              {modalMode === "add" ? "Add New Item" : "Edit Item"}
             </h2>
 
             <form className="space-y-4" onSubmit={handleSubmit}>
@@ -360,7 +517,9 @@ export function Inventory() {
                   className="w-full px-4 py-2.5 text-gray-500 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   placeholder="Enter product name"
                   value={form.name}
-                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, name: e.target.value }))
+                  }
                 />
               </div>
 
@@ -369,7 +528,9 @@ export function Inventory() {
                 <select
                   className="w-full px-4 py-2.5 text-gray-500 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   value={form.category}
-                  onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, category: e.target.value }))
+                  }
                 >
                   <option>Croissant</option>
                   <option>Waffle</option>
@@ -389,7 +550,10 @@ export function Inventory() {
                     placeholder="0"
                     value={form.stock}
                     onChange={(e) =>
-                      setForm((f) => ({ ...f, stock: e.target.value.replace(/\D/g, '') }))
+                      setForm((f) => ({
+                        ...f,
+                        stock: e.target.value.replace(/\D/g, ""),
+                      }))
                     }
                   />
                 </div>
@@ -401,13 +565,17 @@ export function Inventory() {
                     className="w-full px-4 py-2.5 text-gray-500 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     placeholder="pcs"
                     value={form.unit}
-                    onChange={(e) => setForm((f) => ({ ...f, unit: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, unit: e.target.value }))
+                    }
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-gray-700 mb-2">Reorder Level</label>
+                <label className="block text-gray-700 mb-2">
+                  Reorder Level
+                </label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -415,7 +583,10 @@ export function Inventory() {
                   placeholder="20"
                   value={form.reorderLevel}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, reorderLevel: e.target.value.replace(/\D/g, '') }))
+                    setForm((f) => ({
+                      ...f,
+                      reorderLevel: e.target.value.replace(/\D/g, ""),
+                    }))
                   }
                 />
               </div>
@@ -434,7 +605,9 @@ export function Inventory() {
                     className="w-full pl-12 pr-4 py-2.5 text-gray-700 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     placeholder="0"
                     value={formatted}
-                    onChange={(e) => setDigits(e.target.value.replace(/\D/g, ''))}
+                    onChange={(e) =>
+                      setDigits(e.target.value.replace(/\D/g, ""))
+                    }
                   />
                 </div>
               </div>
@@ -461,7 +634,7 @@ export function Inventory() {
                   type="submit"
                   className="flex-1 px-4 py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
                 >
-                  {modalMode === 'add' ? 'Add Item' : 'Save Changes'}
+                  {modalMode === "add" ? "Add Item" : "Save Changes"}
                 </button>
               </div>
             </form>
@@ -473,13 +646,13 @@ export function Inventory() {
       {confirmAnim.mounted && (
         <div
           className={`fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[60]
-          transition-opacity duration-200 ease-out ${confirmAnim.active ? 'opacity-100' : 'opacity-0'}`}
+          transition-opacity duration-200 ease-out ${confirmAnim.active ? "opacity-100" : "opacity-0"}`}
           onClick={() => setShowConfirmAdd(false)}
         >
           <div
             className={`bg-white rounded-xl max-w-sm w-full p-6
             transition-all duration-200 ease-out
-            ${confirmAnim.active ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2'}`}
+            ${confirmAnim.active ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-2"}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start gap-3">
@@ -489,7 +662,9 @@ export function Inventory() {
 
               <div className="flex-1">
                 <h3 className="text-gray-900 mb-1">Konfirmasi</h3>
-                <p className="text-gray-600 text-sm">Apakah Anda yakin ingin menambahkan barang ini?</p>
+                <p className="text-gray-600 text-sm">
+                  Apakah Anda yakin ingin menambahkan barang ini?
+                </p>
               </div>
             </div>
 
@@ -517,13 +692,13 @@ export function Inventory() {
       {delAnim.mounted && (
         <div
           className={`fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[70]
-          transition-opacity duration-200 ease-out ${delAnim.active ? 'opacity-100' : 'opacity-0'}`}
+          transition-opacity duration-200 ease-out ${delAnim.active ? "opacity-100" : "opacity-0"}`}
           onClick={() => setShowDeleteConfirm(false)}
         >
           <div
             className={`bg-white rounded-xl max-w-sm w-full p-6
             transition-all duration-200 ease-out
-            ${delAnim.active ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2'}`}
+            ${delAnim.active ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-2"}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start gap-3">
@@ -532,7 +707,9 @@ export function Inventory() {
               </div>
               <div>
                 <h3 className="text-gray-900 mb-1">Hapus Item</h3>
-                <p className="text-gray-600 text-sm">Yakin ingin menghapus item ini?</p>
+                <p className="text-gray-600 text-sm">
+                  Yakin ingin menghapus item ini?
+                </p>
               </div>
             </div>
 
@@ -562,7 +739,7 @@ export function Inventory() {
           <div
             className={`flex items-center gap-3 bg-white border border-gray-200 shadow-lg rounded-xl px-4 py-3
             transition-all duration-200 ease-out
-            ${toastAnim.active ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}
+            ${toastAnim.active ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}
           >
             <CheckCircle2 className="w-5 h-5 text-green-600" />
             <p className="text-sm text-gray-800">{toast.message}</p>
